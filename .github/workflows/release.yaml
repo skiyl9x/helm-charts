@@ -33,3 +33,15 @@ jobs:
 
       - name: Run lint
         run: ct lint --target-branch main --chart-dirs charts
+
+      - name: Package and Push
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          
+          for chart in charts/*; do
+            if [ -d "$chart" ]; then
+              helm package "$chart"
+              helm push *.tgz oci://ghcr.io/${OWNER}/helm-charts
+              rm *.tgz
+            fi
+          done
