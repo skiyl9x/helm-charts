@@ -1,0 +1,42 @@
+name: Release Helm Charts to GHCR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**' # Triggers only when changes are made to the charts folder
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  push-chart:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Critical: allows the GITHUB_TOKEN to push to GHCR
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'latest'
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.8.0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
