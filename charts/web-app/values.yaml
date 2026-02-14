@@ -19,7 +19,7 @@ image:
 # This is to override the chart name.
 nameOverride: "web-app"
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 3
+replicaCount: 1
 route:
   path: /
 service:
