@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "web-app.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "web-app.name" . }}
+    app.kubernetes.io/instance: {{ include "web-app.instance-name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "web-app.name" . }}
+      app.kubernetes.io/instance: {{ include "web-app.instance-name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "web-app.name" . }}
+        app.kubernetes.io/instance: {{ include "web-app.instance-name" . }}
+    spec:
+      containers:
+        - name: {{ include "web-app.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
