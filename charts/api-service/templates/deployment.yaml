@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "api-service.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "api-service.name" . }}
+    app.kubernetes.io/instance: {{ include "api-service.instance-name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "api-service.name" . }}
+      app.kubernetes.io/instance: {{ include "api-service.instance-name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "api-service.name" . }}
+        app.kubernetes.io/instance: {{ include "api-service.instance-name" . }}
+    spec:
+      containers:
+        - name: {{ include "api-service.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+              {{- if .Values.resources.limits.cpu }}
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              {{- end }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
