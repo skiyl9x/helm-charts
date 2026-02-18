@@ -10,7 +10,7 @@ spec:
     - name: {{ .Values.gateway.name }}
       namespace: {{ .Values.gateway.namespace }}
   hostnames:
-    - "{{ include "web-app.name" . }}.{{ .Values.appsDomain }}"
+    - "{{ .Values.appsDomain }}"
   rules:
     - matches:
         - path:
