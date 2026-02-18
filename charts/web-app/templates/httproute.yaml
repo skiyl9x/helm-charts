@@ -16,6 +16,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.route.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ include "web-app.fullname" . }}
           port: {{ .Values.service.port }}
