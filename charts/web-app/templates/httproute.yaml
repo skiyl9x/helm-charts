@@ -8,7 +8,7 @@ metadata:
 spec:
   parentRefs:
     - name: {{ .Values.gateway.name }}
-      sectionName: https
+      sectionName: websecure
       namespace: {{ .Values.gateway.namespace }}
       kind: Gateway
   hostnames:
