@@ -8,7 +8,9 @@ metadata:
 spec:
   parentRefs:
     - name: {{ .Values.gateway.name }}
+      sectionName: websecure
       namespace: {{ .Values.gateway.namespace }}
+      kind: Gateway
   hostnames:
     - "{{ .Values.appsDomain }}"
   rules:
