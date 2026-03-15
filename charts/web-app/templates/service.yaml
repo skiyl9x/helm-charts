@@ -10,6 +10,7 @@ spec:
     app.kubernetes.io/name: {{ include "web-app.name" . }}
     app.kubernetes.io/instance: {{ include "web-app.instance-name" . }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: http-web
+      port: {{ .Values.service.port }}
       targetPort: {{ .Values.containerPort }}
   type: {{ .Values.service.type }}
