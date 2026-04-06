@@ -19,16 +19,17 @@ spec:
             type: PathPrefix
             value: {{ .Values.route.path }}
       filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /
         - type: RequestHeaderModifier
           requestHeaderModifier:
             set:
               - name: Host
                 value: "{{ include "web-app.fullname" . }}.apps-frontend-dev-01.svc.cluster.local"
+
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ include "web-app.fullname" . }}
           port: {{ .Values.service.port }}
