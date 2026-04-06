@@ -21,7 +21,7 @@ spec:
       filters:
         - type: RequestHeaderModifier
           requestHeaderModifier:
-            set:
+            add:
               - name: Host
                 value: "{{ include "web-app.fullname" . }}.apps-frontend-dev-01.svc.cluster.local"
 
