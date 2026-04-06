@@ -18,6 +18,11 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.route.path }}
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: Host
+                value: "{{ include "web-app.fullname" . }}.apps-backend-dev-01.svc.cluster.local"
       backendRefs:
         - name: {{ include "api-service.fullname" . }}
           port: {{ .Values.service.port }}
