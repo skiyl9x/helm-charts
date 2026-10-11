@@ -1,0 +1,37 @@
+{{- with .Values.policies.forbidPersonLabel }}
+{{- if .enabled }}
+{{- $key := $.Values.personLabel.key }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: forbid-{{ $key }}-label-outside-owner-namespaces
+  labels:
+    {{- include "kyverno-policies.labels" $ | nindent 4 }}
+spec:
+  validationFailureAction: {{ .failureAction }}
+  background: {{ .background }}
+  rules:
+    - name: forbid-{{ $key }}-label
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                {{- include "kyverno-policies.personNamespaces" $ | fromJsonArray | toYaml | nindent 16 }}
+      validate:
+        message: >-
+          The {{ $key }} label is reserved for {{ keys $.Values.personLabel.persons | sortAlpha | join " and " }} namespaces.
+        deny:
+          conditions:
+            any:
+              # Kyverno variable: printed literally so Helm doesn't evaluate it
+              - key: "{{ printf "{{ request.object.metadata.labels.%s || '' }}" $key }}"
+                operator: NotEquals
+                value: ""
+{{- end }}
+{{- end }}
+

@@ -1,0 +1,32 @@
+{{- with .Values.policies.requireReadonlyRootfs }}
+{{- if .enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-readonly-rootfs
+  labels:
+    {{- include "kyverno-policies.labels" $ | nindent 4 }}
+spec:
+  validationFailureAction: {{ .failureAction }}
+  background: {{ .background }}
+  rules:
+    - name: check-containers
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "All containers must set securityContext.readOnlyRootFilesystem to true."
+        foreach:
+          - list: request.object.spec.containers
+            pattern:
+              securityContext:
+                readOnlyRootFilesystem: true
+          - list: request.object.spec.initContainers
+            pattern:
+              securityContext:
+                readOnlyRootFilesystem: true
+{{- end }}
+{{- end }}
+
