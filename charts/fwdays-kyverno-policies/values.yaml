@@ -1,0 +1,22 @@
+# Label added to pods, and the namespaces where each value applies.
+# Pods outside these namespaces must not carry the label.
+personLabel:
+  key: person
+  persons:
+    mentor:
+      namespaces: [mentor]
+    student:
+      namespaces: [student01, student02, student03]
+
+policies:
+  requireReadonlyRootfs:
+    enabled: true
+    failureAction: Audit      # Audit | Enforce
+    background: true
+  addPersonLabel:
+    enabled: true
+  forbidPersonLabel:
+    enabled: true
+    failureAction: Enforce    # Audit | Enforce
+    background: true
+

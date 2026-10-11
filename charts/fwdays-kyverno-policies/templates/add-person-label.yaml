@@ -1,0 +1,27 @@
+{{- if .Values.policies.addPersonLabel.enabled }}
+{{- $key := .Values.personLabel.key }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-{{ $key }}-label
+  labels:
+    {{- include "kyverno-policies.labels" . | nindent 4 }}
+spec:
+  rules:
+{{- range $value, $p := .Values.personLabel.persons }}
+    - name: label-{{ $value }}-pods
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                {{- toYaml $p.namespaces | nindent 16 }}
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              {{ $key }}: {{ $value }}
+{{- end }}
+{{- end }}
+
