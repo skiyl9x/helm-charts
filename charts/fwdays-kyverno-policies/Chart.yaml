@@ -1,6 +1,6 @@
 apiVersion: v2
 name: fwdays-kyverno-policies
-description: Kyverno ClusterPolicies for module02 (read-only root FS, person label)
+description: Kyverno ClusterPolicies for module02 and module04 (read-only root FS, person label, Istio sidecar)
 type: application
-version: 0.1.0
+version: 0.2.0
 

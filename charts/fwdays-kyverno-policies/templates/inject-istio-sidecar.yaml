@@ -1,0 +1,45 @@
+{{- with .Values.policies.injectIstioSidecar }}
+{{- if .enabled }}
+{{- $key := $.Values.personLabel.key }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: inject-istio-sidecar
+  labels:
+    {{- include "kyverno-policies.labels" $ | nindent 4 }}
+  annotations:
+    # mutate pods only: the sidecar is added at pod creation
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  rules:
+{{- range .persons }}
+{{- $p := required (printf "policies.injectIstioSidecar.persons: %q is not in personLabel.persons" .) (index $.Values.personLabel.persons .) }}
+    - name: inject-sidecar-{{ . }}-pods
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+              selector:
+                matchLabels:
+                  {{ $key }}: {{ . }}
+          # pods that get the label from the add-{{ $key }}-label policy in the same request
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+              namespaces:
+                {{- toYaml $p.namespaces | nindent 16 }}
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              # an annotation, not a label: istiod's webhook for unmarked pods
+              # matches only pods without the sidecar.istio.io/inject label
+              sidecar.istio.io/inject: "true"
+{{- end }}
+{{- end }}
+{{- end }}

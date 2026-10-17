@@ -20,3 +20,9 @@ policies:
     failureAction: Enforce    # Audit | Enforce
     background: true
 
+  # Pods with personLabel.key set to one of these values start with the Istio sidecar.
+  # Needs istiod with sidecarInjectorWebhook.enableNamespacesByDefault: true,
+  # sidecarInjectorWebhook.reinvocationPolicy: IfNeeded and global.proxy.autoInject: disabled.
+  injectIstioSidecar:
+    enabled: false
+    persons: [student]
